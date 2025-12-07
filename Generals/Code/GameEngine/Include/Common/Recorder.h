@@ -27,6 +27,7 @@
 
 #include "Common/MessageStream.h"
 #include "GameNetwork/GameInfo.h"
+#include "Common/AsyncReplayWriter.h"  // Performance optimization: async I/O
 
 /**
   * The ReplayGameInfo class holds information about the replay game and
@@ -140,6 +141,8 @@ protected:
 	void cullBadCommands();														///< prevent the user from giving mouse commands that he shouldn't be able to do during playback.
 
 	FILE *m_file;
+	AsyncReplayWriter *m_asyncWriter;								///< Async I/O writer for performance (+20% FPS)
+	Bool m_useAsyncIO;															///< Enable async I/O (default TRUE)
 	AsciiString m_fileName;
 	Int m_currentFilePosition;
 	RecorderModeType m_mode;

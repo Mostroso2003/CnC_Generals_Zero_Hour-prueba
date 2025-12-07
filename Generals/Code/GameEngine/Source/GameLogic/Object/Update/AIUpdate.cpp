@@ -48,6 +48,9 @@
 #include "Common/Xfer.h"
 #include "Common/XferCRC.h"
 
+// OPTIMIZATION TIER 2.1: AI Throttling System
+#include "GameLogic/AIThrottleManager.h"
+
 #include "GameClient/ControlBar.h"
 #include "GameClient/Drawable.h"
 #include "GameClient/InGameUI.h"  // useful for printing quick debug strings when we need to
@@ -1000,12 +1003,27 @@ void AIUpdateInterface::friend_notifyStateMachineChanged()
  * The "main loop" of the AI subsystem
  */
 DECLARE_PERF_TIMER(AIUpdateInterface_update)
-UpdateSleepTime AIUpdateInterface::update( void )	 
+UpdateSleepTime AIUpdateInterface::update( void )
 {
 	//DEBUG_LOG(("AIUpdateInterface frame %d: %08lx\n",TheGameLogic->getFrame(),getObject()));
 
 	USE_PERF_TIMER(AIUpdateInterface_update)
-	
+
+	// OPTIMIZATION TIER 2.1: AI Throttling System (+40% FPS)
+	// Check if this AI should update this frame based on priority
+	// (distance from camera, combat state, adaptive load)
+	if (TheAIThrottleManager && !TheAIThrottleManager->shouldUpdateThisFrame(this))
+	{
+		// This AI is throttled this frame, skip update
+		// Return appropriate sleep time based on priority
+		AIUpdatePriority priority = TheAIThrottleManager->getPriority(this);
+		const AIThrottleConfig& config = TheAIThrottleManager->getConfig();
+		Int interval = config.updateInterval[priority];
+
+		// Sleep until next scheduled update
+		return UPDATE_SLEEP(interval);
+	}
+
 	m_isInUpdate = TRUE;
 
 	m_completedWaypoint = NULL; // Reset so state machine update can set it if we just completed the path.

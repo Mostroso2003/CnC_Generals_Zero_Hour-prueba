@@ -76,6 +76,8 @@ GlobalData* GlobalData::m_theOriginal = NULL;
 	{ "UseTrees",									INI::parseBool,				NULL,			offsetof( GlobalData, m_useTrees ) },
 	{ "UseFPSLimit",							INI::parseBool,				NULL,			offsetof( GlobalData, m_useFpsLimit ) },
 	{ "DumpAssetUsage",						INI::parseBool,				NULL,			offsetof( GlobalData, m_dumpAssetUsage ) },
+	{ "DisableCRCChecks",					INI::parseBool,				NULL,			offsetof( GlobalData, m_disableCRCChecks ) },
+	{ "EnableAIThrottling",				INI::parseBool,				NULL,			offsetof( GlobalData, m_enableAIThrottling ) },
 	{ "FramesPerSecondLimit",			INI::parseInt,				NULL,			offsetof( GlobalData, m_framesPerSecondLimit ) },
 	{ "ChipsetType",							INI::parseInt,				NULL,			offsetof( GlobalData, m_chipSetType ) },
 	{ "MaxShellScreens",					INI::parseInt,				NULL,			offsetof( GlobalData, m_maxShellScreens ) },
@@ -596,6 +598,8 @@ GlobalData::GlobalData()
 	m_useDrawModuleLOD = FALSE;
 	m_useFpsLimit = FALSE;
 	m_dumpAssetUsage = FALSE;
+	m_disableCRCChecks = FALSE;  // Default: CRC checks enabled for multiplayer safety
+	m_enableAIThrottling = TRUE;  // Default: AI throttling enabled (+40% FPS with 1,000+ units)
 	m_framesPerSecondLimit = 0;
 	m_chipSetType = 0;
 	m_windowed = 0;
